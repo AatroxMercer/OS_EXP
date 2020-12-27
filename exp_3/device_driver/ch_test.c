@@ -45,12 +45,14 @@ static int userReception(int op) {
         sem_union.val = 1;
         if(semctl(sem_handle, 0, SETVAL, sem_union) == UNREGISTE)
             { printf("Error : Failed to create semaphore\n"); }
+        printf("Create semaphore success.\n");
         return op;
     }
     // delete semaphore
     if (total == 1 && op == -1) {
         if(semctl(sem_handle, 0, IPC_RMID) == REGISTE)
             { printf("Error : Failed to delete semaphore\n"); }
+        printf("Delete semaphore success.\n");
         return op;
     }
     return 0;
