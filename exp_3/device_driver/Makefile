@@ -12,7 +12,7 @@ endif
 load:
 	sudo dmesg --clear
 	sudo insmod ch_device.ko
-	sudo mknod /dev/ch_device c 290 0
+	sudo mknod /dev/ch_device c 290 1
 
 test: ch_test.c
 	gcc $< -o ch_test

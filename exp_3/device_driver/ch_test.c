@@ -9,8 +9,8 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
-#define REGISTE 1
-#define UNREGISTE -1
+#define REGISTER 1
+#define UNREGISTER -1
 #define WAIT_P -1
 #define SIGNAL_V +1
 #define MSG_MAX_LENGTH 140+1
@@ -26,11 +26,9 @@ union semun {
 	unsigned short *arry;
 };
 
-// op : 1 to registe , -1 to unregiste
+// op : 1 to register , -1 to unregister
 // return 0 : fail
 static int userReception(int op) {
-    sem_handle = semget(ftok("/dev/ch_device", 0), 1, IPC_CREAT);
-
     // refresh user table
     int total;
     FILE* fd = fopen("/home/sb/desktop/workspace/os/exp_3/device_driver/user.table", "rt+");
@@ -39,18 +37,19 @@ static int userReception(int op) {
     fprintf(fd, "%5d", total+op);
     fclose(fd);
 
+    sem_handle = semget(ftok("/dev/ch_device", 0), 1, IPC_CREAT);
     // create semaphore
     if (total == 0 && op == 1) {
         union semun sem_union;
         sem_union.val = 1;
-        if(semctl(sem_handle, 0, SETVAL, sem_union) == UNREGISTE)
+        if(semctl(sem_handle, 0, SETVAL, sem_union) == -1)
             { printf("Error : Failed to create semaphore\n"); }
         printf("Create semaphore success.\n");
         return op;
     }
     // delete semaphore
     if (total == 1 && op == -1) {
-        if(semctl(sem_handle, 0, IPC_RMID) == REGISTE)
+        if(semctl(sem_handle, 0, IPC_RMID) == -1)
             { printf("Error : Failed to delete semaphore\n"); }
         printf("Delete semaphore success.\n");
         return op;
@@ -91,13 +90,13 @@ static void smtp() {
 }
 
 int main(int argc, char *argv[]) {
-    userReception(REGISTE);
-
     device_handle = open("/dev/ch_device", O_RDWR, S_IRUSR | S_IWUSR);
     if (device_handle == -1 ){
         printf("Error : device open failure\n");
         return -1;
     }
+
+    userReception(REGISTER);
 
     pid_t pid = fork();
     // error occured
@@ -120,6 +119,6 @@ int main(int argc, char *argv[]) {
     }
 
     close(device_handle);
-    userReception(UNREGISTE);
+    userReception(UNREGISTER);
     return 0;
 }
