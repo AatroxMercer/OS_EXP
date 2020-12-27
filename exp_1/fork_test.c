@@ -9,11 +9,7 @@ int a = 0;
 int main() {
         int child_status;
         pid_t pid, pid_self;
-        /*
-                fork:
-                        return 0 for child process
-                        return child pid for parent process
-        */
+
         pid = fork();
         a++;
         printf("%d", a);

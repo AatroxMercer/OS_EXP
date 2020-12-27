@@ -11,11 +11,11 @@ modules:
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
 endif
 
-gettimeofday : call_gettimeofday.c
+call_gettimeofday : call_gettimeofday.c
 	gcc $(CFLAGS) $< -o $@
 
 
-mysyscall : call_mysyscall.c
+call_mysyscall : call_mysyscall.c
 	gcc $(CFLAGS) $< -o $@
 
 clean:
